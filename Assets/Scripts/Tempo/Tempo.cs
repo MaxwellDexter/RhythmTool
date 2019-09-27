@@ -12,10 +12,16 @@ public class Tempo : MonoBehaviour
     private double secsPerBeat;
     private double startTime;
     private double currentBeatTime;
+    private BeatInformer informer;
 
     public double CurrentBeatTime
     {
         get { return currentBeatTime; }
+    }
+
+    private void Start()
+    {
+        informer = BeatInformer.GetInstance();
     }
 
     /// <summary>
@@ -52,14 +58,20 @@ public class Tempo : MonoBehaviour
         currentBeatTime = 0;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         if (hasStarted)
         {
             double currentTime = AudioSettings.dspTime;
-            if (currentTime > currentBeatTime)
+            bool hasGonePastBeat = false;
+            while (currentTime > currentBeatTime)
             {
+                hasGonePastBeat = true;
                 currentBeatTime += secsPerBeat;
+            }
+            if (hasGonePastBeat)
+            {
+                informer.OnBeat();
                 // trigger beat
                 Debug.Log("beat");
                 // still need to think about early for next beat

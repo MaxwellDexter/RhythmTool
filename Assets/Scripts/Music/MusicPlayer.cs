@@ -38,7 +38,8 @@ public class MusicPlayer : MonoBehaviour, ITempoReceiver
         else
         {
             //currentSong.source.PlayDelayed((float)(AudioSettings.dspTime - (manager.GetCurrentBeatTime() + secsPerBeat)));
-            currentSong.source.Play((ulong)(manager.GetCurrentBeatTime() + secsPerBeat));
+            //currentSong.source.Play((ulong)(manager.GetCurrentBeatTime() + secsPerBeat));
+            currentSong.source.Play();
         }
     }
 
