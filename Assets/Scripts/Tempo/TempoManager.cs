@@ -5,7 +5,6 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
     private bool tempoFound;
     public TapTempo tapTempo;
     public Tempo tempo;
-    public GameObject textObject;
 
     public TempoManager()
     {
@@ -23,6 +22,7 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
         tempoFound = true;
         tempo.SetTempo(interval);
         tempo.StartTempo();
+        Debug.Log("BPM: " + TempoUtils.FlipBpmInterval(interval));
         TempoStartInformer.GetInstance().ReceiveTempo(interval);
     }
 

@@ -52,7 +52,7 @@ public class Tempo : MonoBehaviour
         currentBeatTime = 0;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (hasStarted)
         {
