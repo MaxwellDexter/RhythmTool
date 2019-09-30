@@ -21,6 +21,7 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
     {
         tempoFound = true;
         tempo.SetTempo(interval);
+        tempo.SetLatency(50);
         tempo.StartTempo();
         Debug.Log("BPM: " + TempoUtils.FlipBpmInterval(interval));
         TempoStartInformer.GetInstance().ReceiveTempo(interval);
@@ -33,7 +34,7 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
 
     public TimingOption IsInTime()
     {
-        return tempo.IsInBeat(AudioSettings.dspTime);
+        return tempo.IsInBeat();
     }
 
     public void Tap()
