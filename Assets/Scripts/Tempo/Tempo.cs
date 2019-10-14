@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 /// <summary>
 /// Tempo class for starting and stopping tempo. Keeps the beat.
@@ -16,7 +17,8 @@ public class Tempo : MonoBehaviour
     private double latencyMilliseconds;
 
     public Sound tempoSound;
-    public TimingOption[] timingOptions;
+    [HideInInspector]
+    public List<TimingOption> timingOptions;
 
     public double CurrentBeatTime
     {
