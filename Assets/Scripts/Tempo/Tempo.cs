@@ -16,6 +16,7 @@ public class Tempo : MonoBehaviour
     private double latencyMilliseconds;
 
     public Sound tempoSound;
+    public TimingOption[] timingOptions;
 
     public double CurrentBeatTime
     {
@@ -60,7 +61,6 @@ public class Tempo : MonoBehaviour
             startTime = AudioSettings.dspTime;
             currentBeatTime = startTime;
             hasStarted = true;
-            // need trigger to music player
         }
     }
 
@@ -96,7 +96,7 @@ public class Tempo : MonoBehaviour
     /// Is the time you have in time with the beat? Passes in the current time retrieved from AudioSettings.
     /// </summary>
     /// <returns>The timing option for the beat</returns>
-    public TimingOption IsInBeat()
+    public TimingEnum IsInBeat()
     {
         return IsInBeat(AudioSettings.dspTime);
     }
@@ -106,16 +106,16 @@ public class Tempo : MonoBehaviour
     /// </summary>
     /// <param name="time">Your time that you have calculated when the user presses a button or something.</param>
     /// <returns>The timing option for the beat</returns>
-    public TimingOption IsInBeat(double time)
+    public TimingEnum IsInBeat(double time)
     {
         if (!hasStarted)
         {
-            return TimingOption.Bad;
+            return TimingEnum.Bad;
         }
         else return GetTimingOption(time, currentBeatTime, nextBeatTime);
     }
 
-    private TimingOption GetTimingOption(double theTime, double currentBeat, double nextBeat)
+    private TimingEnum GetTimingOption(double theTime, double currentBeat, double nextBeat)
     {
         double latency = TempoUtils.GetSecondsFromMilliseconds(latencyMilliseconds);
         double timeMinusLatency = theTime - latency;
@@ -130,23 +130,23 @@ public class Tempo : MonoBehaviour
         // perfect
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), 0, false))
         {
-            return TimingOption.Perfect;
+            return TimingEnum.Perfect;
         }
         // good
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 12.5), true))
         {
-            return TimingOption.Good;
+            return TimingEnum.Good;
         }
         // late
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 25), true))
         {
-            return TimingOption.Late;
+            return TimingEnum.Late;
         }
 
         // bad
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 18.75), PercentToSeconds(secsPerBeat, 50), true))
         {
-            return TimingOption.Bad;
+            return TimingEnum.Bad;
         }
 
 
@@ -155,24 +155,24 @@ public class Tempo : MonoBehaviour
         // early
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 75), true))
         {
-            return TimingOption.Early;
+            return TimingEnum.Early;
         }
         // good
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 87.5), true))
         {
             Debug.Log("early good");
-            return TimingOption.Good;
+            return TimingEnum.Good;
         }
         // perfect
         if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 93.75), false))
         {
             Debug.Log("early perfect");
-            return TimingOption.Perfect;
+            return TimingEnum.Perfect;
         }
 
         Debug.Log("END BAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         Debug.Log("Current: " + beatToCompareTo + " This hit: " + timeMinusLatency);
-        return TimingOption.Bad; // log something instead
+        return TimingEnum.Bad; // log something instead
     }
 
     private double PercentToSeconds(double secondsPerBeat, double percentage)

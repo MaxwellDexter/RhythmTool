@@ -31,7 +31,7 @@ public class MusicPlayer : MonoBehaviour, ITempoReceiver
         currentSong = SoundUtils.MakeSource(currentSong, GetAudioSource());
 
         // check if in beat and play music
-        if (manager.IsInTime(AudioSettings.dspTime) == TimingOption.Perfect)
+        if (manager.IsInTime(AudioSettings.dspTime) == TimingEnum.Perfect)
         {
             currentSong.source.Play();
         }

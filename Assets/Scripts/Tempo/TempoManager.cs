@@ -3,6 +3,7 @@
 public class TempoManager : MonoBehaviour, ITempoReceiver
 {
     private bool tempoFound;
+    public bool useTapTempo;
     public TapTempo tapTempo;
     public Tempo tempo;
 
@@ -25,14 +26,14 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
         tempo.StartTempo();
         Debug.Log("BPM: " + TempoUtils.FlipBpmInterval(interval));
         TempoStartInformer.GetInstance().ReceiveTempo(interval);
-    }
+	}
 
-    public TimingOption IsInTime(double time)
+	public TimingEnum IsInTime(double time)
     {
         return tempo.IsInBeat(time);
     }
 
-    public TimingOption IsInTime()
+    public TimingEnum IsInTime()
     {
         return tempo.IsInBeat();
     }

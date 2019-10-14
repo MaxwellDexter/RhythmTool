@@ -11,14 +11,24 @@ public class FlyingText : MonoBehaviour
 
     private readonly float speedMultiplier = 1f;
 
-    public void SetUp(Transform trans, string textToShow, Vector2 speed)
+    public void SetUp(Transform trans, string textToShow, Vector2 speed, Color32 textColor, bool useRandomSpread)
     {
         transform.position = trans.position;
         text = GetComponent<TextMeshPro>();
         text.SetText(textToShow);
+        text.color = textColor;
         deathTimer = MAX_DEATH_TIMER;
-        float speedX = Mathf.Sign(speed.x) * Random.Range(0.5f, 1.5f);
-        float speedY = Mathf.Sign(speed.y) * Random.Range(0.5f, 1.5f);
+
+        float speedX = speed.x;
+        if (useRandomSpread && speed.x != 0)
+        {
+            speedX = Mathf.Sign(speed.x) * Random.Range(0.5f, 1.5f);
+        }
+        float speedY = speed.y;
+        if (useRandomSpread && speed.y != 0)
+        {
+            speedY = Mathf.Sign(speed.y) * Random.Range(0.5f, 1.5f);
+        }
         force = new Vector3(speedX, speedY, 0f);
     }
     

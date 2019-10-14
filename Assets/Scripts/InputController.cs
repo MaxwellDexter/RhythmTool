@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
 
-public class InputController : AbstractTempoReceiver
+public class InputController : MonoBehaviour
 {
     public GameObject tempo;
     private TempoManager man;
     public Sound tapSound;
-    TempoStartInformer informer;
+    private TempoStartInformer informer;
+    private FlyingTextShower textShower;
 
     private void Start()
     {
-        base.Start();
         man = tempo.GetComponent<TempoManager>();
         tapSound = SoundUtils.MakeSource(tapSound, gameObject.AddComponent<AudioSource>());
         informer = TempoStartInformer.GetInstance();
+        textShower = GetComponent<FlyingTextShower>();
     }
 
     private void Update()
@@ -29,12 +30,32 @@ public class InputController : AbstractTempoReceiver
         }
         else if (Input.anyKeyDown)
         {
-            Debug.Log(man.IsInTime(AudioSettings.dspTime).ToString());
+            TimingEnum result = man.IsInTime(AudioSettings.dspTime);
+            textShower.SetColor(GetColor(result));
+            textShower.ShowText(result.ToString(), new Vector2(0, 1), false);
+            //Debug.Log();
         }
     }
 
-    public override void OnBeat()
+    private Color GetColor(TimingEnum result)
     {
-        //Debug.Log(man.IsInTime(AudioSettings.dspTime).ToString());
+        switch (result)
+        {
+            case TimingEnum.Bad:
+                return Color.red;
+
+            case TimingEnum.Early:
+                return new Color(255, 137, 0);
+
+            case TimingEnum.Good:
+                return Color.green;
+
+            case TimingEnum.Perfect:
+                return Color.cyan;
+
+            case TimingEnum.Late:
+                return new Color(255, 0, 255);
+        }
+        return Color.white;
     }
 }
