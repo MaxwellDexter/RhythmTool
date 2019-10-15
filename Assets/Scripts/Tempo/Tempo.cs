@@ -98,7 +98,7 @@ public class Tempo : MonoBehaviour
     /// Is the time you have in time with the beat? Passes in the current time retrieved from AudioSettings.
     /// </summary>
     /// <returns>The timing option for the beat</returns>
-    public TimingEnum IsInBeat()
+    public TimingOption IsInBeat()
     {
         return IsInBeat(AudioSettings.dspTime);
     }
@@ -108,89 +108,48 @@ public class Tempo : MonoBehaviour
     /// </summary>
     /// <param name="time">Your time that you have calculated when the user presses a button or something.</param>
     /// <returns>The timing option for the beat</returns>
-    public TimingEnum IsInBeat(double time)
+    public TimingOption IsInBeat(double time)
     {
         if (!hasStarted)
         {
-            return TimingEnum.Bad;
+            return null;
         }
         else return GetTimingOption(time, currentBeatTime, nextBeatTime);
     }
 
-    private TimingEnum GetTimingOption(double theTime, double currentBeat, double nextBeat)
+    private TimingOption GetTimingOption(double theTime, double currentBeat, double nextBeat)
     {
         double latency = TempoUtils.GetSecondsFromMilliseconds(latencyMilliseconds);
         double timeMinusLatency = theTime - latency;
         double beatToCompareTo = currentBeat;
 
-        if (timeMinusLatency < currentBeat)
+        // if it's past the halfway point of the beat
+        if (timeMinusLatency >= currentBeat + (secsPerBeat / 2))
         {
-            beatToCompareTo = currentBeat - secsPerBeat;
-            Debug.Log("could've been bad!");
+            Debug.Log("Before!");
+            beatToCompareTo = currentBeat + secsPerBeat;
         }
 
-        // perfect
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), 0, false))
+        foreach (TimingOption option in timingOptions)
         {
-            return TimingEnum.Perfect;
-        }
-        // good
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 12.5), true))
-        {
-            return TimingEnum.Good;
-        }
-        // late
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 25), true))
-        {
-            return TimingEnum.Late;
+            if (IsInWindow(timeMinusLatency, beatToCompareTo, option.window * secsPerBeat, option.offsetFromBeat * secsPerBeat, false))
+            {
+                return option;
+            }
         }
 
-        // bad
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 18.75), PercentToSeconds(secsPerBeat, 50), true))
-        {
-            return TimingEnum.Bad;
-        }
-
-
-        // next beat
-
-        // early
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 75), true))
-        {
-            return TimingEnum.Early;
-        }
-        // good
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 87.5), true))
-        {
-            Debug.Log("early good");
-            return TimingEnum.Good;
-        }
-        // perfect
-        if (IsInWindow(timeMinusLatency, beatToCompareTo, PercentToSeconds(secsPerBeat, 6.25), PercentToSeconds(secsPerBeat, 93.75), false))
-        {
-            Debug.Log("early perfect");
-            return TimingEnum.Perfect;
-        }
-
-        Debug.Log("END BAD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-        Debug.Log("Current: " + beatToCompareTo + " This hit: " + timeMinusLatency);
-        return TimingEnum.Bad; // log something instead
+        throw new System.Exception("Timing Option was not found for beat! Please ensure that your timing options cover the entire beat!");
     }
 
-    private double PercentToSeconds(double secondsPerBeat, double percentage)
-    {
-        return secondsPerBeat * (percentage * 0.01);
-    }
-
-    private bool IsInWindow(double theTime, double initialTime, double window, double offset, bool multiDirectional)
+    private bool IsInWindow(double inputTime, double beatTime, double window, double offset, bool multiDirectional)
     {
         if (multiDirectional)
         {
-            return theTime > initialTime + offset - window && theTime < initialTime + offset + window;
+            return inputTime >= beatTime + offset - window && inputTime < beatTime + offset + window;
         }
         else
         {
-            return theTime > initialTime + offset && theTime < initialTime + offset + window;
+            return inputTime >= beatTime + offset && inputTime < beatTime + offset + window;
         }
     }
 }

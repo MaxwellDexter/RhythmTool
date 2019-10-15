@@ -28,12 +28,12 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
         TempoStartInformer.GetInstance().ReceiveTempo(interval);
 	}
 
-	public TimingEnum IsInTime(double time)
+	public TimingOption IsInTime(double time)
     {
         return tempo.IsInBeat(time);
     }
 
-    public TimingEnum IsInTime()
+    public TimingOption IsInTime()
     {
         return tempo.IsInBeat();
     }

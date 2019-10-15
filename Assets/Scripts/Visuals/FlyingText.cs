@@ -11,7 +11,7 @@ public class FlyingText : MonoBehaviour
 
     private readonly float speedMultiplier = 1f;
 
-    public void SetUp(Transform trans, string textToShow, Vector2 speed, Color32 textColor, bool useRandomSpread)
+    public void SetUp(Transform trans, string textToShow, Vector2 speed, Color textColor, bool useRandomSpread)
     {
         transform.position = trans.position;
         text = GetComponent<TextMeshPro>();

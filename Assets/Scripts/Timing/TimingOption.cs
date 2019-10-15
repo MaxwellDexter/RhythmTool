@@ -21,8 +21,7 @@ public class TimingOption
     /// </summary>
     public Color associatedColor;
 
-    /// <summary>
-    /// what is the range that this is applicable for?
-    /// </summary>
-    public Vector2 rangeInBeat;
+    public double window;
+
+    public double offsetFromBeat;
 }

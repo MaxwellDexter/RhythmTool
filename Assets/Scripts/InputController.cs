@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 public class InputController : MonoBehaviour
 {
@@ -30,9 +30,12 @@ public class InputController : MonoBehaviour
         }
         else if (Input.anyKeyDown)
         {
-            TimingEnum result = man.IsInTime(AudioSettings.dspTime);
-            textShower.SetColor(GetColor(result));
-            textShower.ShowText(result.ToString(), new Vector2(0, 1), false);
+            //TimingEnum result = TimingEnum.Good;
+            //textShower.ShowText("yeo", new Vector2(0, 1), false);
+            TimingOption result = man.IsInTime(AudioSettings.dspTime);
+            //textShower.SetColor(new Color(20, 20, 20));
+            textShower.SetColor(result.associatedColor);
+            textShower.ShowText(result.name, new Vector2(0, 1), false);
             //Debug.Log();
         }
     }

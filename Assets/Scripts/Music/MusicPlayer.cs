@@ -31,12 +31,14 @@ public class MusicPlayer : MonoBehaviour, ITempoReceiver
         currentSong = SoundUtils.MakeSource(currentSong, GetAudioSource());
 
         // check if in beat and play music
-        if (manager.IsInTime(AudioSettings.dspTime) == TimingEnum.Perfect)
+        if (manager.IsInTime(AudioSettings.dspTime).name == "Good")
         {
+            Debug.Log("playing now");
             currentSong.source.Play();
         }
         else
         {
+            Debug.Log("playing delayed");
             currentSong.source.PlayDelayed((float)(AudioSettings.dspTime - (manager.GetCurrentBeatTime() + secsPerBeat)));
             //currentSong.source.Play((ulong)(manager.GetCurrentBeatTime() + secsPerBeat));
             //currentSong.source.Play();

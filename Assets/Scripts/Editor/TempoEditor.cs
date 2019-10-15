@@ -22,13 +22,20 @@ public class TempoEditor : Editor
         foreach (TimingOption option in myTarget.timingOptions)
         {
             EditorGUILayout.Separator();
-            option.name = EditorGUILayout.TextField("Name", option.name);
-            option.breaksCombo = EditorGUILayout.Toggle("Breaks Combo", option.breaksCombo);
-            option.associatedColor = EditorGUILayout.ColorField("Associated Color", option.associatedColor);
-            if (GUILayout.Button("Remove", GUILayout.MaxWidth(50)))
+            // title
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(option.name);
+            if (GUILayout.Button("Remove"))
             {
                 toRemove.Add(option);
             }
+            EditorGUILayout.EndHorizontal();
+            // fields
+            option.name = EditorGUILayout.TextField("Name", option.name);
+            option.breaksCombo = EditorGUILayout.Toggle("Breaks Combo", option.breaksCombo);
+            option.associatedColor = EditorGUILayout.ColorField("Associated Color", option.associatedColor);
+            option.window = EditorGUILayout.DoubleField("Window In Beat", option.window);
+            option.offsetFromBeat = EditorGUILayout.DoubleField("Offset From Beat", option.offsetFromBeat);
         }
 
         foreach (TimingOption option in toRemove)
