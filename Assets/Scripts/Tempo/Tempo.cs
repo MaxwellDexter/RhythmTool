@@ -14,8 +14,10 @@ public class Tempo : MonoBehaviour
     private BeatInformer informer;
     private double latencyMilliseconds;
 
-    [HideInInspector]
-    public List<TimingOption> timingOptions;
+    private List<TimingOption> timingOptions;
+    private bool usesSubdivisions;
+
+    public TempoConfig config;
 
     public double CurrentBeatTime
     {
@@ -59,6 +61,8 @@ public class Tempo : MonoBehaviour
             startTime = AudioSettings.dspTime;
             currentBeatTime = startTime;
             hasStarted = true;
+            timingOptions = config.timingOptions;
+            usesSubdivisions = config.useSubdivisions;
             // also grab config data and store it
         }
     }
@@ -148,5 +152,14 @@ public class Tempo : MonoBehaviour
         {
             return inputTime >= beatTime + offset && inputTime < beatTime + offset + window;
         }
+    }
+
+    /// <summary>
+    /// Set the tempo configuration that you would like. Will take effect once the tempo starts.
+    /// </summary>
+    /// <param name="tempoConfig">The tempo config you would like to set</param>
+    public void SetTempoConfig(TempoConfig tempoConfig)
+    {
+        config = tempoConfig;
     }
 }

@@ -373,7 +373,7 @@ Camera:
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60
-  orthographic: 1
+  orthographic: 0
   orthographic size: 5
   m_Depth: -1
   m_CullingMask:
@@ -706,6 +706,7 @@ GameObject:
   - component: {fileID: 1352110209}
   - component: {fileID: 1352110208}
   - component: {fileID: 1352110207}
+  - component: {fileID: 1352110211}
   m_Layer: 0
   m_Name: Tempo
   m_TagString: Untagged
@@ -725,17 +726,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bd1af6bf039241a2b55f35cc72b99a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  windowModifier: 2
-  tempoSound:
-    name: sound
-    clip: {fileID: 8300000, guid: efb44a29b8a6e4aec96ca682c8f05bed, type: 3}
-    volume: 1
-    pitch: 1
-    loop: 0
-    spatialBlend: 0
-    maxDistance: 0
-    rollOffMode: 0
-    source: {fileID: 0}
+  config: {fileID: 1352110211}
 --- !u!114 &1352110208
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -777,6 +768,45 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1352110211
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1352110206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb96e321b07044716b5e8946bf2fd271, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  useSubdivisions: 1
+  timingOptions:
+  - name: Bad
+    breaksCombo: 0
+    associatedColor: {r: 0.825, g: 0.17024536, b: 0.110137045, a: 255}
+    window: 0.2
+    offsetFromBeat: -0.5
+  - name: Early
+    breaksCombo: 1
+    associatedColor: {r: 0.9339623, g: 0.9268815, b: 0.101326115, a: 1}
+    window: 0.2
+    offsetFromBeat: -0.3
+  - name: Good
+    breaksCombo: 0
+    associatedColor: {r: 0.11124954, g: 0.9433962, b: 0.112391524, a: 255}
+    window: 0.2
+    offsetFromBeat: -0.1
+  - name: Late
+    breaksCombo: 1
+    associatedColor: {r: 306.35324, g: 0, b: 340.44495, a: 255}
+    window: 0.2
+    offsetFromBeat: 0.1
+  - name: Also Bad
+    breaksCombo: 1
+    associatedColor: {r: 0.9528302, g: 0.1284735, b: 0.12135102, a: 255}
+    window: 0.2
+    offsetFromBeat: 0.3
 --- !u!1 &1488413176
 GameObject:
   m_ObjectHideFlags: 0

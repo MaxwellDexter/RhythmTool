@@ -1,16 +1,17 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.SceneManagement;
 
-[CustomEditor(typeof(Tempo))]
-public class TempoEditor : Editor
+[CustomEditor(typeof(TempoConfig))]
+public class TempoConfigEditor : Editor
 {
     List<TimingOption> toRemove = new List<TimingOption>();
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        Tempo myTarget = (Tempo)target;
+        TempoConfig myTarget = (TempoConfig)target;
         EditorGUILayout.Separator();
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Timing Options");
@@ -43,5 +44,12 @@ public class TempoEditor : Editor
             myTarget.timingOptions.Remove(option);
         }
         toRemove.Clear();
+
+        // making changes to the custom gui save
+        if (GUI.changed)
+        {
+            EditorUtility.SetDirty(myTarget);
+            EditorSceneManager.MarkSceneDirty(myTarget.gameObject.scene);
+        }
     }
 }
