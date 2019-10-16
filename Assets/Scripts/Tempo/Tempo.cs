@@ -6,8 +6,6 @@ using UnityEngine;
 /// </summary>
 public class Tempo : MonoBehaviour
 {
-    public float windowModifier;
-
     private bool hasStarted;
     private double secsPerBeat;
     private double startTime;
@@ -16,7 +14,6 @@ public class Tempo : MonoBehaviour
     private BeatInformer informer;
     private double latencyMilliseconds;
 
-    public Sound tempoSound;
     [HideInInspector]
     public List<TimingOption> timingOptions;
 
@@ -28,7 +25,6 @@ public class Tempo : MonoBehaviour
     private void Start()
     {
         informer = BeatInformer.GetInstance();
-        tempoSound = SoundUtils.MakeSource(tempoSound, gameObject.AddComponent<AudioSource>());
     }
 
     /// <summary>
@@ -63,6 +59,7 @@ public class Tempo : MonoBehaviour
             startTime = AudioSettings.dspTime;
             currentBeatTime = startTime;
             hasStarted = true;
+            // also grab config data and store it
         }
     }
 
