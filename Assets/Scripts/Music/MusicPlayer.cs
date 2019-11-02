@@ -30,19 +30,7 @@ public class MusicPlayer : MonoBehaviour, ITempoReceiver
         currentSong.pitch = (float)TempoUtils.GetPitchModifierFromBpm(bpm, clip.bpm);
         currentSong = SoundUtils.MakeSource(currentSong, GetAudioSource());
 
-        // check if in beat and play music
-        if (manager.IsInTime(AudioSettings.dspTime).name == "Good")
-        {
-            Debug.Log("playing now");
-            currentSong.source.Play();
-        }
-        else
-        {
-            Debug.Log("playing delayed");
-            currentSong.source.PlayDelayed((float)(AudioSettings.dspTime - (manager.GetCurrentBeatTime() + secsPerBeat)));
-            //currentSong.source.Play((ulong)(manager.GetCurrentBeatTime() + secsPerBeat));
-            //currentSong.source.Play();
-        }
+        currentSong.source.PlayDelayed((float)(AudioSettings.dspTime - (manager.GetCurrentBeatTime() + secsPerBeat)));
     }
 
     private MusicClip GetClip(double bpm)

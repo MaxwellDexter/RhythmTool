@@ -12,10 +12,15 @@ public class Tempo : MonoBehaviour
     private double currentBeatTime;
     private double nextBeatTime;
     private BeatInformer informer;
-    private double latencyMilliseconds;
+
+    /// <summary>
+    /// The latency, stored in seconds.
+    /// </summary>
+    private double latency;
 
     private List<TimingOption> timingOptions;
     private bool usesSubdivisions;
+    private int subdivisionsPerBeat;
 
     public TempoConfig config;
 
@@ -41,10 +46,28 @@ public class Tempo : MonoBehaviour
     /// <summary>
     /// Sets the latency of the tempo in milliseconds. For calculating the timing options.
     /// </summary>
-    /// <param name="theLatency">in milliseconds</param>
-    public void SetLatency(double theLatency)
+    /// <param name="theLatency">the latency in milliseconds</param>
+    public void SetLatencyMilliseconds(double theLatency)
     {
-        latencyMilliseconds = theLatency;
+        latency = TempoUtils.GetSecondsFromMilliseconds(theLatency);
+    }
+
+    /// <summary>
+    /// Sets the latency of the tempo in seconds. For calculating the timing options.
+    /// </summary>
+    /// <param name="theLatency">the latency in seconds</param>
+    public void SetLatencySeconds(double theLatency)
+    {
+        latency = theLatency;
+    }
+
+    /// <summary>
+    /// Set the tempo configuration that you would like. Will take effect once the tempo starts.
+    /// </summary>
+    /// <param name="tempoConfig">The tempo config you would like to set</param>
+    public void SetTempoConfig(TempoConfig tempoConfig)
+    {
+        config = tempoConfig;
     }
 
     /// <summary>
@@ -63,10 +86,13 @@ public class Tempo : MonoBehaviour
             hasStarted = true;
             timingOptions = config.timingOptions;
             usesSubdivisions = config.useSubdivisions;
-            // also grab config data and store it
+            subdivisionsPerBeat = config.subdivisionsPerBeat;
         }
     }
 
+    /// <summary>
+    /// Stops the tempo from doing it's thang and resets some values.
+    /// </summary>
     public void StopTempo()
     {
         hasStarted = false;
@@ -89,8 +115,6 @@ public class Tempo : MonoBehaviour
             if (hasGonePastBeat)
             {
                 informer.OnBeat();
-                //tempoSound.source.Play();
-                // still need to think about early for next beat
             }
         }
     }
@@ -115,25 +139,40 @@ public class Tempo : MonoBehaviour
         {
             return null;
         }
-        else return GetTimingOption(time, currentBeatTime, nextBeatTime);
+        else return GetTimingOption(time, currentBeatTime);
     }
 
-    private TimingOption GetTimingOption(double theTime, double currentBeat, double nextBeat)
+    /// <summary>
+    /// What timing option for the current beat/subdivision is valid for the input time?
+    /// Will throw an exception if the timing option couldn't be found.
+    /// Ya gotta configure your options correctly bud.
+    /// </summary>
+    /// <param name="theTime">The input time that you want to get the option for.</param>
+    /// <param name="currentBeat">The current time of the beat</param>
+    /// <returns>the timing option that is for the input time</returns>
+    private TimingOption GetTimingOption(double theTime, double currentBeat)
     {
-        double latency = TempoUtils.GetSecondsFromMilliseconds(latencyMilliseconds);
-        double timeMinusLatency = theTime - latency;
-        double beatToCompareTo = currentBeat;
+        double timeMinusLatency = GetLatencyTime(theTime);
+		double beatToCompareTo;
+        double beatTimeFrame = secsPerBeat;
 
-        // if it's past the halfway point of the beat
-        if (timeMinusLatency >= currentBeat + (secsPerBeat / 2))
+        if (usesSubdivisions && subdivisionsPerBeat > 1)
         {
-            Debug.Log("Before!");
-            beatToCompareTo = currentBeat + secsPerBeat;
+            // if we should use subdivisions
+			beatToCompareTo = GetCurrentSubdivision(timeMinusLatency, currentBeat, secsPerBeat);
+            beatTimeFrame = TempoUtils.GetSubdivisionWindow(secsPerBeat, subdivisionsPerBeat);
         }
+        else
+		{
+            // if we should use the beat
+			beatToCompareTo = TempoUtils.GetBeatToCompareTo(timeMinusLatency, currentBeat, secsPerBeat);
+		}
 
         foreach (TimingOption option in timingOptions)
         {
-            if (IsInWindow(timeMinusLatency, beatToCompareTo, option.window * secsPerBeat, option.offsetFromBeat * secsPerBeat, false))
+            if (TempoUtils.IsInWindow(timeMinusLatency, beatToCompareTo,
+                    option.window * beatTimeFrame,
+                    option.offsetFromBeat * beatTimeFrame))
             {
                 return option;
             }
@@ -142,24 +181,43 @@ public class Tempo : MonoBehaviour
         throw new System.Exception("Timing Option was not found for beat! Please ensure that your timing options cover the entire beat!");
     }
 
-    private bool IsInWindow(double inputTime, double beatTime, double window, double offset, bool multiDirectional)
+    /// <summary>
+    /// Subtracts the stored latency from the give time
+    /// </summary>
+    /// <param name="theTime">the time you want to adjust for latency</param>
+    /// <returns>the time minus the latency</returns>
+    private double GetLatencyTime(double theTime)
     {
-        if (multiDirectional)
-        {
-            return inputTime >= beatTime + offset - window && inputTime < beatTime + offset + window;
-        }
-        else
-        {
-            return inputTime >= beatTime + offset && inputTime < beatTime + offset + window;
-        }
+        return theTime - latency;
     }
 
     /// <summary>
-    /// Set the tempo configuration that you would like. Will take effect once the tempo starts.
-    /// </summary>
-    /// <param name="tempoConfig">The tempo config you would like to set</param>
-    public void SetTempoConfig(TempoConfig tempoConfig)
+	/// Will retrieve all of the times of the subdivision of the current beat,
+	/// and loop through them to find the one that is closest to the input time.
+	/// </summary>
+	/// <param name="currentBeat">The current beat to retrieve subdivisions from</param>
+	/// <returns>the time of the subdivision that the input time is closest to</returns>
+    private double GetCurrentSubdivision(double inputTime, double currentBeat, double secondsPerBeat)
     {
-        config = tempoConfig;
+        List<double> subdivTimes = TempoUtils.GetSubdivisionTimes(currentBeat, secsPerBeat, subdivisionsPerBeat);
+
+        for (int i = 0; i < subdivTimes.Count - 1; i++)
+        {
+            if (TempoUtils.IsInWindow(inputTime, subdivTimes[i], subdivTimes[i+1]))
+            {
+                return TempoUtils.GetBeatToCompareTo(inputTime, subdivTimes[i], TempoUtils.GetSubdivisionWindow(secondsPerBeat, subdivisionsPerBeat));
+            }
+        }
+
+        string errorMsg = "Can't find the subdivision! Input Time was: " + inputTime;
+        errorMsg += "\n subdivisions were: ";
+        foreach (double subdiv in subdivTimes)
+        {
+            errorMsg += "\n" + subdiv;
+        }
+
+        Debug.LogError(errorMsg);
+        return 0;
+        // throw new System.Exception(errorMsg);
     }
 }

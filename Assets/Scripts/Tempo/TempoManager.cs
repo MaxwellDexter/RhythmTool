@@ -22,7 +22,7 @@ public class TempoManager : MonoBehaviour, ITempoReceiver
     {
         tempoFound = true;
         tempo.SetTempo(interval);
-        tempo.SetLatency(50);
+        tempo.SetLatencyMilliseconds(50);
         tempo.StartTempo();
         Debug.Log("BPM: " + TempoUtils.FlipBpmInterval(interval));
         TempoStartInformer.GetInstance().ReceiveTempo(interval);

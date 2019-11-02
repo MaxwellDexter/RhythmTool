@@ -12,6 +12,17 @@ public class TempoConfigEditor : Editor
         DrawDefaultInspector();
 
         TempoConfig myTarget = (TempoConfig)target;
+
+        if (myTarget.useSubdivisions)
+        {
+            myTarget.subdivisionsPerBeat = EditorGUILayout.IntField("Subdivisions Per Beat", myTarget.subdivisionsPerBeat);
+            myTarget.useSwing = EditorGUILayout.Toggle("Use Swing", myTarget.useSwing);
+            if (myTarget.useSwing)
+            {
+                myTarget.swingAmount = EditorGUILayout.FloatField("Swing Amount", myTarget.swingAmount);
+            }
+        }
+
         EditorGUILayout.Separator();
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField("Timing Options");

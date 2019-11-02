@@ -4,6 +4,16 @@ using UnityEngine;
 public class TempoConfig : MonoBehaviour
 {
     public bool useSubdivisions;
+
+    [HideInInspector]
+    public int subdivisionsPerBeat;
+
+    [HideInInspector]
+    public bool useSwing;
+
+    [HideInInspector]
+    public float swingAmount;
+
     [HideInInspector]
     public List<TimingOption> timingOptions;
 
@@ -14,7 +24,4 @@ public class TempoConfig : MonoBehaviour
             timingOptions = new List<TimingOption>();
         }
     }
-
-    // might not need to have the file saving if we can save it to the component
-    // then we can drag and drop configurations onto tempos
 }
