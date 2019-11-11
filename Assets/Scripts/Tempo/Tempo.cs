@@ -19,7 +19,7 @@ public class Tempo : MonoBehaviour
     private double latency;
 
     private List<TimingOption> timingOptions;
-    private bool usesSubdivisions;
+    private TimingCalculations timingCalculation;
     private int subdivisionsPerBeat;
 
     public TempoConfig config;
@@ -85,7 +85,7 @@ public class Tempo : MonoBehaviour
             currentBeatTime = startTime;
             hasStarted = true;
             timingOptions = config.timingOptions;
-            usesSubdivisions = config.useSubdivisions;
+            timingCalculation = config.timingCalculation;
             subdivisionsPerBeat = config.subdivisionsPerBeat;
         }
     }
@@ -156,11 +156,26 @@ public class Tempo : MonoBehaviour
 		double beatToCompareTo;
         double beatTimeFrame = secsPerBeat;
 
-        if (usesSubdivisions && subdivisionsPerBeat > 1)
+        if (timingCalculation.Equals(TimingCalculations.Subdivision) && subdivisionsPerBeat > 1)
         {
             // if we should use subdivisions
 			beatToCompareTo = GetCurrentSubdivision(timeMinusLatency, currentBeat, secsPerBeat);
             beatTimeFrame = TempoUtils.GetSubdivisionWindow(secsPerBeat, subdivisionsPerBeat);
+        }
+        else if (timingCalculation.Equals(TimingCalculations.Pattern))
+        {
+            // if we should use the pattern given
+            beatToCompareTo = TempoUtils.GetBeatToCompareTo(timeMinusLatency, currentBeat, secsPerBeat);
+            /*
+             * so we need to find out the subdivisions per beat
+             * then we can map that to the beat of the song
+             */
+        }
+        else if (timingCalculation.Equals(TimingCalculations.Song))
+        {
+            // if we should return the timing option of the song
+            // man this means we'll have to keep track of where we are in the song
+            beatToCompareTo = TempoUtils.GetBeatToCompareTo(timeMinusLatency, currentBeat, secsPerBeat);
         }
         else
 		{
@@ -170,12 +185,16 @@ public class Tempo : MonoBehaviour
 
         foreach (TimingOption option in timingOptions)
         {
-            if (TempoUtils.IsInWindow(timeMinusLatency, beatToCompareTo,
-                    option.window * beatTimeFrame,
-                    option.offsetFromBeat * beatTimeFrame))
+            foreach(TimingWindow window in option.windows)
             {
-                return option;
+                if (TempoUtils.IsInWindow(timeMinusLatency, beatToCompareTo,
+                    window.window * beatTimeFrame,
+                    window.beatOffset * beatTimeFrame))
+                {
+                    return option;
+                }
             }
+            
         }
 
         throw new System.Exception("Timing Option was not found for beat! Please ensure that your timing options cover the entire beat!");

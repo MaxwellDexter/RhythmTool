@@ -780,46 +780,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb96e321b07044716b5e8946bf2fd271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useSubdivisions: 1
+  timingCalculation: 1
   subdivisionsPerBeat: 2
-  useSwing: 0
-  swingAmount: 0
+  pattern: 
   timingOptions:
-  - name: Bad
+  - optionName: Bad
     breaksCombo: 1
-    associatedColor: {r: 0.825, g: 0.17024536, b: 0.110137045, a: 255}
-    window: 0.2
-    offsetFromBeat: -0.5
-  - name: Early
+    associatedColor: {r: 1, g: 0, b: 0.058823533, a: 1}
+    windows:
+    - window: 0.2
+      beatOffset: -0.5
+    - window: 0.2
+      beatOffset: 0.3
+  - optionName: Early
     breaksCombo: 1
-    associatedColor: {r: 0.9339623, g: 0.9268815, b: 0.101326115, a: 1}
-    window: 0.15
-    offsetFromBeat: -0.3
-  - name: Good
+    associatedColor: {r: 0.9607844, g: 1, b: 0, a: 1}
+    windows:
+    - window: 0.15
+      beatOffset: -0.3
+  - optionName: Good
     breaksCombo: 0
-    associatedColor: {r: 0.11124954, g: 0.9433962, b: 0.112391524, a: 255}
-    window: 0.1
-    offsetFromBeat: -0.15
-  - name: Late
+    associatedColor: {r: 0.01576485, g: 0.804, b: 0, a: 1}
+    windows:
+    - window: 0.1
+      beatOffset: -0.15
+    - window: 0.1
+      beatOffset: 0.05
+  - optionName: Late
     breaksCombo: 1
-    associatedColor: {r: 306.35324, g: 0, b: 340.44495, a: 255}
-    window: 0.15
-    offsetFromBeat: 0.15
-  - name: Also Bad
-    breaksCombo: 1
-    associatedColor: {r: 0.9528302, g: 0.1284735, b: 0.12135102, a: 255}
-    window: 0.2
-    offsetFromBeat: 0.3
-  - name: Perfect
+    associatedColor: {r: 0.8482146, g: 0, b: 1, a: 1}
+    windows:
+    - window: 0.15
+      beatOffset: 0.15
+  - optionName: Perf!
     breaksCombo: 0
-    associatedColor: {r: 0.0786757, g: 0.93509144, b: 0.9811321, a: 255}
-    window: 0.1
-    offsetFromBeat: -0.05
-  - name: Also Good
-    breaksCombo: 0
-    associatedColor: {r: 0.010390517, g: 0.888, b: 0, a: 1}
-    window: 0.1
-    offsetFromBeat: 0.05
+    associatedColor: {r: 0, g: 0.63529414, b: 1, a: 1}
+    windows:
+    - window: 0.1
+      beatOffset: -0.05
 --- !u!1 &1488413176
 GameObject:
   m_ObjectHideFlags: 0

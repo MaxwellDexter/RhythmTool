@@ -32,7 +32,7 @@ public class InputController : MonoBehaviour
         {
             TimingOption result = man.IsInTime(AudioSettings.dspTime);
             textShower.SetColor(result.associatedColor);
-            textShower.ShowText(result.name, new Vector2(0, 1), false);
+            textShower.ShowText(result.optionName, new Vector2(0, 1), false);
         }
     }
 }

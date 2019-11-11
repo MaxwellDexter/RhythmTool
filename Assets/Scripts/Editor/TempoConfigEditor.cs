@@ -1,66 +1,49 @@
-﻿using UnityEditor;
-using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 
 [CustomEditor(typeof(TempoConfig))]
 public class TempoConfigEditor : Editor
 {
-    List<TimingOption> toRemove = new List<TimingOption>();
+    TempoConfig theConfig;
+    TimingOptionWindow timingWindow;
+
+    void OnEnable()
+    {
+        theConfig = (TempoConfig)target;
+	}
+
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        TempoConfig myTarget = (TempoConfig)target;
-
-        if (myTarget.useSubdivisions)
-        {
-            myTarget.subdivisionsPerBeat = EditorGUILayout.IntField("Subdivisions Per Beat", myTarget.subdivisionsPerBeat);
-            myTarget.useSwing = EditorGUILayout.Toggle("Use Swing", myTarget.useSwing);
-            if (myTarget.useSwing)
-            {
-                myTarget.swingAmount = EditorGUILayout.FloatField("Swing Amount", myTarget.swingAmount);
-            }
-        }
-
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("subdivisionsPerBeat"));
         EditorGUILayout.Separator();
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Timing Options");
-        if (GUILayout.Button("Add Option"))
+
+        if (theConfig.timingCalculation.Equals(TimingCalculations.Subdivision))
         {
-            myTarget.timingOptions.Add(new TimingOption());
+            theConfig.subdivisionsPerBeat = EditorGUILayout.IntField("Subdivisions Per Beat", theConfig.subdivisionsPerBeat);
         }
-        EditorGUILayout.EndHorizontal();
-        foreach (TimingOption option in myTarget.timingOptions)
+        else if (theConfig.timingCalculation.Equals(TimingCalculations.Pattern))
         {
-            EditorGUILayout.Separator();
-            // title
-            EditorGUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(option.name);
-            if (GUILayout.Button("Remove"))
-            {
-                toRemove.Add(option);
-            }
-            EditorGUILayout.EndHorizontal();
-            // fields
-            option.name = EditorGUILayout.TextField("Name", option.name);
-            option.breaksCombo = EditorGUILayout.Toggle("Breaks Combo", option.breaksCombo);
-            option.associatedColor = EditorGUILayout.ColorField("Associated Color", option.associatedColor);
-            option.window = EditorGUILayout.DoubleField("Window In Beat", option.window);
-            option.offsetFromBeat = EditorGUILayout.DoubleField("Offset From Beat", option.offsetFromBeat);
+            //myTarget.pattern = EditorGUI.
         }
 
-        foreach (TimingOption option in toRemove)
+        if (GUILayout.Button("Open Popup"))
         {
-            myTarget.timingOptions.Remove(option);
+            timingWindow = TimingOptionWindow.Construct();
+            timingWindow.position = new Rect(Screen.width / 2, Screen.height / 2, 250, 150);
+            timingWindow.SetConfig(theConfig);
+            timingWindow.Show();
         }
-        toRemove.Clear();
 
         // making changes to the custom gui save
         if (GUI.changed)
         {
-            EditorUtility.SetDirty(myTarget);
-            EditorSceneManager.MarkSceneDirty(myTarget.gameObject.scene);
+            EditorUtility.SetDirty(theConfig);
+            EditorSceneManager.MarkSceneDirty(theConfig.gameObject.scene);
         }
     }
+    
 }

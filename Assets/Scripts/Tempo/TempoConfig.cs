@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum TimingCalculations
+{
+    Beat,
+    Subdivision,
+    Pattern,
+    Song
+}
+
 public class TempoConfig : MonoBehaviour
 {
-    public bool useSubdivisions;
+    public TimingCalculations timingCalculation;
 
     [HideInInspector]
     public int subdivisionsPerBeat;
 
     [HideInInspector]
-    public bool useSwing;
-
-    [HideInInspector]
-    public float swingAmount;
+    public bool[] pattern;
 
     [HideInInspector]
     public List<TimingOption> timingOptions;
